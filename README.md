@@ -1,118 +1,63 @@
-# Lovable Prompting Best Practices
+# Lovable Vibe Coder Skills
 
-A curated collection of prompting patterns, reusable templates, and real-world examples for building production-quality apps with [Lovable](https://lovable.dev).
+คอลเลกชัน Manus Skills สำหรับสร้าง prompt แบบ chain pattern เพื่อ build แอปด้วย [Lovable](https://lovable.dev) — รับ idea เป็นภาษาไทย ออก prompt พร้อม paste ทีละ chain
 
-## Why This Exists
-
-Vague prompts produce vague apps. This repository captures battle-tested patterns that consistently yield clean, deployable results — from single components to full-stack SaaS products.
-
-## Repository Structure
+## โครงสร้าง
 
 ```
-├── skill.md          # Root skill — general Lovable phase planner
-├── skills/           # Domain-specific phase planner skills
-│   ├── auth/skill.md
-│   ├── landing-pages/skill.md
-│   ├── dashboards/skill.md
-│   ├── e-commerce/skill.md
-│   ├── forms/skill.md
-│   ├── saas-apps/skill.md
-│   └── data/skill.md
-├── templates/        # Reusable prompt scaffolds
-│   ├── component-prompt.md
-│   ├── feature-request.md
-│   └── bug-fix.md
-└── examples/         # Full real-world prompt → app walkthroughs
-    ├── todo-app.md
-    ├── blog-platform.md
-    └── crm-dashboard.md
+├── SKILL.md                      # Root skill — รับ idea แล้วแบ่ง 4 chain
+└── skills/
+    ├── saas-apps/SKILL.md        # SaaS app (auth, features, billing)
+    ├── auth/SKILL.md             # ระบบ login, OAuth, protected routes
+    ├── landing-pages/SKILL.md    # Landing page, hero, pricing, SEO
+    ├── dashboards/SKILL.md       # Dashboard, KPI cards, charts
+    ├── e-commerce/SKILL.md       # ร้านค้า, cart, Stripe checkout
+    ├── forms/SKILL.md            # Form, validation, file upload
+    ├── data/SKILL.md             # CRUD table, kanban, CSV import/export
+    └── sub-chain/SKILL.md        # v2 — sub-chain pattern, 1 prompt = 1 component
 ```
 
-## Core Principles
+## Chain Pattern (v1)
 
-### 1. Describe the User, Not the Widget
-Tell Lovable who the user is and what they need to accomplish — not the exact UI components to render.
+แบ่ง build เป็น 4 chain ตามลำดับนี้เสมอ:
 
-| Weak | Strong |
-|------|--------|
-| "Add a button" | "Add a primary CTA that lets a first-time visitor start a free trial without signing up" |
-| "Make a form" | "Create a contact form for a B2B SaaS: company name, work email, team size dropdown, and a message field. Validate on submit." |
+| Chain | ชื่อ | เป้าหมาย |
+|-------|------|----------|
+| Chain 1 | โครงสร้าง | Layout shell, sidebar, routes เปล่า — ไม่มี logic |
+| Chain 2 | ฟีเจอร์หลัก | UI ทุกฟีเจอร์ด้วย mock data — ไม่มี database |
+| Chain 3 | จัดการข้อมูล | Supabase schema + auth + เชื่อม UI กับ database จริง |
+| Chain 4 | เก็บรายละเอียด | Loading, error, empty states, mobile, polish |
 
-### 2. Anchor Every Request with Context
+## Sub-Chain Pattern (v2)
 
-Always include:
-- **Who** is using this feature
-- **What** they are trying to accomplish
-- **Where** this fits in the app flow (first visit, post-login, checkout, etc.)
-
-### 3. Specify Constraints Upfront
-
-Lovable will make choices for you. Override the important ones early:
+แตก prompt ย่อยกว่า v1 — **1 prompt = 1 component** เพื่อลด regression
 
 ```
-Use Tailwind CSS for all styling.
-Use shadcn/ui for components.
-Store data in Supabase.
-No external font imports — use the system font stack.
-Mobile-first layout.
+Chain 1     — Layout shell
+Chain 2.1   — Component แรก
+Chain 2.2   — Component สอง
+...
+Chain 3.1   — Auth
+Chain 3.2   — เชื่อม feature แรกกับ Supabase
+...
+Chain 4     — Polish
 ```
 
-### 4. One Feature Per Prompt
+ใช้ `skills/sub-chain/SKILL.md` สำหรับแอปซับซ้อนหรือเมื่อ v1 ทำให้ Lovable regression
 
-Break large builds into sequential, focused prompts. Each prompt should ship one complete, testable feature.
+## Skills
 
-### 5. Reference What Already Exists
-
-When iterating, name the component or section you want changed:
-
-```
-In the <PricingCard> component, change the "Get Started" button to open a modal
-instead of navigating to /signup.
-```
-
-### 6. End With Acceptance Criteria
-
-Close every prompt with a short checklist Lovable can validate against:
-
-```
-When complete:
-- [ ] The form submits without a page reload
-- [ ] Errors display inline below each field
-- [ ] A success toast appears after submission
-- [ ] The form resets after success
-```
-
-## Skills (Phase Planners)
-
-Each skill takes your app idea and outputs a ready-to-paste, phase-by-phase Lovable prompt plan.
-
-| Skill | Best for |
-|-------|----------|
-| [SaaS Apps](skills/saas-apps/skill.md) | Full-stack SaaS — auth, features, billing, admin |
-| [Auth](skills/auth/skill.md) | Login, OAuth, magic link, protected routes, RBAC |
-| [Landing Pages](skills/landing-pages/skill.md) | Marketing sites — hero, pricing, testimonials, SEO |
-| [Dashboards](skills/dashboards/skill.md) | Analytics, admin panels, KPI charts, data tables |
-| [E-Commerce](skills/e-commerce/skill.md) | Product catalog, cart, Stripe checkout, orders |
-| [Forms](skills/forms/skill.md) | Contact forms, multi-step wizards, file uploads |
-| [Data Management](skills/data/skill.md) | CRUD tables, kanban, CSV import/export, real-time |
-
-## Quick-Start Templates
-
-- [Component Prompt Template](templates/component-prompt.md)
-- [Feature Request Template](templates/feature-request.md)
-- [Bug Fix Template](templates/bug-fix.md)
-
-## Real-World Examples
-
-- [To-Do App](examples/todo-app.md) — Full build from blank canvas to deployed app
-- [Blog Platform](examples/blog-platform.md) — Multi-author publishing with MDX
-- [CRM Dashboard](examples/crm-dashboard.md) — Data-heavy app with filters, charts, and exports
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on adding new patterns and examples.
+| Skill | ใช้เมื่อ |
+|-------|---------|
+| [SaaS Apps](skills/saas-apps/SKILL.md) | แอปที่ต้องการ login, user data, dashboard |
+| [Auth](skills/auth/SKILL.md) | ระบบ login, Google OAuth, protected routes, RBAC |
+| [Landing Pages](skills/landing-pages/SKILL.md) | หน้าเว็บสาธารณะ hero, pricing, testimonials |
+| [Dashboards](skills/dashboards/SKILL.md) | Analytics, KPI cards, Recharts, data tables |
+| [E-Commerce](skills/e-commerce/SKILL.md) | Product catalog, cart, Stripe, admin |
+| [Forms](skills/forms/SKILL.md) | Form ทุกประเภท, validation, file upload, email |
+| [Data Management](skills/data/SKILL.md) | CRUD table, kanban, drag-to-reorder, CSV |
+| [Sub-Chain (v2)](skills/sub-chain/SKILL.md) | ลด regression — 1 prompt ต่อ 1 component |
 
 ## License
 
 MIT
-# skill-lovable
