@@ -2,6 +2,16 @@
 
 คอลเลกชัน Lovable Skills สำหรับสร้าง prompt แบบ chain pattern เพื่อ build แอปด้วย [Lovable](https://lovable.dev) — รับ idea เป็นภาษาไทย ออก prompt พร้อม paste ทีละ chain
 
+## ติดตั้ง Skill
+
+1. เปิด Lovable แล้วไปที่ **Settings → Skills**
+2. กด **Add Skill** แล้วเลือก **Import from URL**
+3. วาง URL นี้:
+   ```
+   https://github.com/youngcyber/skill-lovable/blob/main/SKILL.md
+   ```
+4. กด **Import** — Skill จะพร้อมใช้งานทันที
+
 ## วิธีใช้งาน
 
 > **แนะนำ: เรียกใช้ skill ในโหมด Plan เสมอ**
