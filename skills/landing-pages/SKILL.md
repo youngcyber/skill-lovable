@@ -1,168 +1,261 @@
 ---
 name: lovable-landing-page-planner
-description: "Generate a phase-by-phase Lovable prompt plan for building a high-converting marketing landing page — hero, features, pricing, testimonials, FAQ, and SEO."
+description: "รับ idea product แล้วสร้าง prompt แบบ chain pattern 4 ชั้นสำหรับ landing page บน Lovable: โครงสร้าง → section หลัก → เชื่อม backend → เก็บรายละเอียด รองรับภาษาไทย"
 ---
 
 # Lovable Landing Page Planner
 
-Turn a product description into a sequenced set of Lovable prompts, one section at a time. Landing pages are built section by section: nav/footer shell first, then hero, then supporting sections, then SEO last.
+สร้าง chain prompt สำหรับ landing page บน Lovable ใน 4 ชั้น สร้าง layout shell ก่อน แล้วเพิ่มทีละ section ตามลำดับความสำคัญ
 
 ## When to Use
 
-- User wants to build a marketing or landing page with Lovable
-- User needs a public homepage for their product or service
-- User asks about hero sections, pricing tables, testimonials, or FAQ sections
-- User wants to build a pre-launch waitlist page
+- User อยากสร้าง landing page หรือ marketing site ด้วย Lovable
+- User ต้องการ hero, pricing, testimonials, หรือ FAQ section
+- User พูดถึงหน้าเว็บสาธารณะที่ไม่ต้อง login
+- User ใช้ภาษาไทยในการอธิบาย product
 
 ## Input Schema
 
 ```yaml
-product_name: string        # REQUIRED — name of the product
-product_description: string # REQUIRED — what it does and who it's for
-primary_cta: string         # REQUIRED — the action visitors should take, e.g. "Start free trial"
-primary_cta_route: string   # REQUIRED — where the CTA links to, e.g. /signup
-sections_needed: list       # OPTIONAL — [hero, features, how-it-works, pricing, testimonials, faq, cta-banner]
-                            # default: all sections
-has_pricing: boolean        # OPTIONAL — default: false
-plan_names: list            # OPTIONAL — required if has_pricing: true
-brand_color: string         # OPTIONAL — e.g. "indigo" — default: indigo
+product_name: string          # ชื่อ product
+product_description: string   # ทำอะไร สำหรับใคร
+primary_cta: string           # action หลัก เช่น "เริ่มใช้ฟรี"
+primary_cta_route: string     # ลิงก์ CTA เช่น /signup
+sections: list                # [hero, features, how-it-works, pricing, testimonials, faq, cta-banner]
+has_pricing: boolean          # มี pricing section ไหม
+plan_names: list              # ชื่อ plan ถ้ามี pricing
+brand_color: string           # สีหลัก default: indigo
 ```
 
 ## Workflow
 
-### Step 1: Clarify Requirements
+### Step 1: ทำความเข้าใจ product
 
-If `primary_cta` or `primary_cta_route` is missing, ask for them before writing any prompts. Every section links to the primary CTA.
+ถ้าไม่รู้ `primary_cta_route` ถามก่อน — ทุก section ต้องการ route นี้
 
-### Step 2: Select Sections
-
-Build sections in this order:
+### Step 2: วาง 4 Chain
 
 ```
-Phase 1 → Stack + Base Layout (navbar + footer shell)
-Phase 2 → Hero Section
-Phase 3 → Features / How It Works
-Phase 4 → Social Proof (logo strip + testimonials)
-Phase 5 → Pricing Section           (if has_pricing: true)
-Phase 6 → FAQ Section               (if requested)
-Phase 7 → Final CTA Banner
-Phase 8 → SEO + Performance
+Chain 1 → โครงสร้าง: Navbar, footer shell, route เปล่าที่ /
+Chain 2 → ฟีเจอร์หลัก: Hero, features, testimonials, pricing sections
+Chain 3 → จัดการข้อมูล: Form submissions, waitlist, analytics (ถ้ามี)
+Chain 4 → เก็บรายละเอียด: SEO meta, performance, mobile, animations
 ```
 
-**Ordering rules:**
-- Navbar and footer always Phase 1 — every section shares the same wrapper
-- Hero always Phase 2 — sets the visual direction before building more
-- SEO always last — after all content is in place
-- Never combine two sections in one prompt
+### Step 3: เขียน Prompt แต่ละ Chain
 
-### Step 3: Write Each Phase Prompt
+---
 
-Each prompt must specify: exact headline and copy, CTA routes, Lucide icon names, Tailwind classes for key elements, responsive breakpoints, and "Done when" checkboxes.
+**Chain 1 — โครงสร้าง**
 
-**Hero section rules:**
-- One h1 per page — only the hero has h1, all other sections use h2
-- Both CTAs must be visible above the fold on 375px mobile
-- Always include a product screenshot placeholder (can be swapped later)
+```
+สร้าง layout shell สำหรับ landing page ของ [ชื่อ product]
 
-**Pricing section rules:**
-- Monthly/annual toggle with smooth price crossfade
-- Most popular plan: scale-105, indigo background
-- Enterprise/custom plan CTA always links to /contact, not /signup
+Tech stack:
+- React + Vite + TypeScript
+- Tailwind CSS + shadcn/ui
+- Lucide React
+- react-helmet-async (ติดตั้งด้วย)
 
-**Testimonial rules:**
-- Stars: Lucide Star, fill-yellow-400, not outline
-- Section background: gray-50 to contrast with white page sections
+Navbar:
+- โลโก้ "[ชื่อ product]" (font-bold, [brand_color]-600) ซ้าย
+- Nav links กลาง/ขวา: [LIST links]
+- CTA ปุ่มขวาสุด: "[primary_cta]" → [primary_cta_route] (indigo-600, white text)
+- Sticky: เมื่อ scroll 64px → bg-white/90 backdrop-blur border-b border-gray-100
+- Mobile: hamburger → drawer, ปิดเมื่อ click link
 
-### Step 4: Output the Plan
+Footer:
+- โลโก้ + tagline ซ้ายบน
+- Link columns: [COLUMNS]
+- Bottom bar: "© [ปี] [ชื่อ product]" + Privacy + Terms
+- bg-gray-900 text-white
 
-Present all phases in order with complete prompts and checklists.
+Route / : แสดงแค่ placeholder "[ชื่อ product] Landing Page" centered ก่อน
+
+เสร็จเมื่อ:
+- [ ] Navbar render พร้อม link และปุ่ม CTA
+- [ ] Navbar sticky + backdrop blur หลัง scroll
+- [ ] Footer render ครบทุก column
+- [ ] Mobile hamburger เปิด/ปิดได้
+- [ ] / route render ไม่ error
+```
+
+---
+
+**Chain 2 — ฟีเจอร์หลัก**
+
+```
+เพิ่ม sections ให้ landing page ของ [ชื่อ product]
+
+[สร้างทีละ section ตาม sections_needed:]
+
+HERO SECTION (ถ้าต้องการ):
+- Headline: "[HEADLINE]"
+- Subheadline: "[SUBHEADLINE — ไม่เกิน 2 บรรทัด]"
+- Primary CTA: "[primary_cta]" → [primary_cta_route] (indigo-600)
+- Secondary CTA: "[text]" → [action]
+- Social proof: "[ข้อความ เช่น ใช้โดย 2,000+ ทีม]"
+- Hero image: placeholder 16:9 (gray-100 bg, rounded-xl) — สลับทีหลัง
+- Layout: centered mobile / text-left image-right desktop (lg:grid-cols-2)
+- มีแค่ 1 h1 ในทั้งหน้า
+
+FEATURES SECTION (ถ้าต้องการ):
+- Heading: "[HEADING]" (h2)
+- [N] cards: icon (Lucide) + title + description 2 ประโยค
+- Grid: 3 cols desktop, 2 tablet, 1 mobile
+- Card: white, border, rounded-2xl, hover:shadow-md
+
+PRICING SECTION (ถ้า has_pricing):
+- Toggle monthly/annual (default: monthly)
+- [N] plan cards — most popular: indigo bg, scale-105
+- "Save X%" badge เมื่อเลือก annual
+- Plan ราคา custom → CTA "ติดต่อเรา" → /contact
+
+TESTIMONIALS SECTION (ถ้าต้องการ):
+- 6 quote cards, 3-column grid
+- แต่ละ card: 5 stars (fill-yellow-400), quote, ชื่อ + ตำแหน่ง + บริษัท
+- bg-gray-50 section
+
+FAQ SECTION (ถ้าต้องการ):
+- shadcn Accordion, one open at a time
+- [N] คำถาม-คำตอบ
+
+FINAL CTA BANNER:
+- bg-indigo-600, centered, ปุ่ม white
+
+เสร็จเมื่อ:
+- [ ] Hero แสดงครบ: headline, 2 CTAs, social proof, placeholder image
+- [ ] CTA ทุกปุ่มลิงก์ถูกต้อง
+- [ ] Pricing toggle เปลี่ยนราคาได้
+- [ ] Stars ใน testimonials เป็น fill-yellow-400
+- [ ] ทุก section heading เป็น h2 (ยกเว้น hero ที่เป็น h1)
+```
+
+---
+
+**Chain 3 — จัดการข้อมูล**
+
+*ใช้เฉพาะถ้ามี form หรือ backend เช่น waitlist, contact form*
+
+```
+เพิ่มระบบ backend ให้ [ชื่อ product] landing page
+
+[ถ้ามี waitlist form:]
+Supabase table:
+waitlist (
+  id uuid primary key default gen_random_uuid(),
+  email text unique not null,
+  created_at timestamptz default now()
+)
+RLS: INSERT เปิดสำหรับทุกคน (public), SELECT เฉพาะ authenticated
+
+Connect form:
+- Email input + ปุ่ม "เข้าร่วมรายการรอ"
+- INSERT into waitlist on submit
+- Success: เปลี่ยนเป็น "สมัครแล้ว! เราจะแจ้งเตือนคุณ"
+- Duplicate email: แสดง "Email นี้สมัครไว้แล้ว"
+
+[ถ้ามี contact form:]
+- POST /api/contact → ส่ง email ด้วย Resend
+- fields: ชื่อ, email, ข้อความ
+- ต้อง validate ก่อน submit
+
+เสร็จเมื่อ:
+- [ ] Form submit บันทึกข้อมูลจริง
+- [ ] Success state แสดงหลัง submit
+- [ ] Duplicate email แสดง error ถูกต้อง
+```
+
+---
+
+**Chain 4 — เก็บรายละเอียด**
+
+```
+เพิ่ม SEO, performance, และ polish ให้ [ชื่อ product] landing page
+
+SEO (react-helmet-async):
+- Title: "[ชื่อ product] — [tagline]"
+- Description: "[max 160 ตัวอักษร]"
+- og:title, og:description, og:image, og:type: website
+- twitter:card: summary_large_image
+- Canonical URL: https://[domain]/
+
+Images:
+- Hero image: fetchpriority="high" (above the fold)
+- ทุกรูปอื่น: loading="lazy" + explicit width + height
+
+Performance:
+- Google Fonts: <link rel="preconnect"> + <link rel="dns-prefetch">
+- ห้ามมี render-blocking scripts
+
+Animations:
+- Section scroll-in: fade-up (translateY(20px) → 0, opacity 0 → 1) เมื่อ scroll เข้า viewport
+- Pricing toggle: price crossfade 200ms
+- CTA button hover: scale-105 transition
+
+Mobile audit:
+- ทุก section อ่านง่ายบน 375px iPhone
+- Pricing cards stack vertically (most popular ขึ้นก่อน)
+- Navbar mobile drawer ปิดเรียบร้อย
+
+เสร็จเมื่อ:
+- [ ] Meta tags ครบ og: และ twitter:
+- [ ] Hero image มี fetchpriority="high"
+- [ ] รูปอื่นทุกรูปมี loading="lazy"
+- [ ] Scroll animation ทำงานได้
+- [ ] ทุก section อ่านง่ายบน 375px
+```
 
 ## Output Schema
 
 ```yaml
-plan_title: string            # "[Product Name] Landing Page — Build Plan"
-product_summary: string       # One sentence confirming product and primary CTA
-sections: list                # Which sections will be built
-phases:
+plan_title: string          # "[Product Name] Landing Page — Build Plan"
+product_summary: string     # สรุปหนึ่งประโยค
+chains:
   - number: integer
     name: string
     goal: string
-    prompt: string             # Complete ready-to-paste Lovable prompt
-    done_when: list            # 3-5 specific testable checkboxes
-total_phases: integer
+    prompt: string
+    done_when: list
+total_chains: integer       # 3 ถ้าไม่มี backend, 4 ถ้ามี
 ```
 
 ## Output Format
 
 ```
-# [Product Name] Landing Page — Build Plan
-> [One sentence: product, target visitor, primary CTA]
+# [ชื่อ Product] Landing Page — Build Plan
+> [สรุปหนึ่งประโยค]
 
 ---
 
-## Phase 1 — Stack + Base Layout
-**Goal:** Navbar and footer before any section content.
+## Chain 1 — โครงสร้าง
+**เป้าหมาย:** Navbar + footer shell ก่อน section ใดๆ
 
-[COMPLETE LOVABLE PROMPT]
+[PROMPT]
 
-**Done when:**
-- [ ] Navbar renders with all links and CTA button
-- [ ] Navbar becomes sticky with backdrop blur after scrolling
-- [ ] Footer renders with correct columns and copyright
-- [ ] Mobile hamburger menu opens and closes
+**เสร็จเมื่อ:** ...
 
 ---
-
-## Phase 2 — Hero Section
-**Goal:** Above-the-fold first impression with primary CTA.
-
-[COMPLETE LOVABLE PROMPT]
-
-**Done when:**
-- [ ] Both CTAs visible above fold on 375px mobile
-- [ ] Desktop: text left, screenshot right (lg:grid-cols-2)
-- [ ] Section has exactly one h1 tag
-- [ ] Social proof line appears below CTAs
-
+(Chain 2, 3, 4)
 ---
 
-**Total phases: N**
-Paste Phase 1 into Lovable. Verify every checkbox before pasting Phase 2.
+**รวม [N] Chains**
+Paste Chain 1 เข้า Lovable ✓ ทุก checkbox แล้วไป Chain 2
 ```
 
 ## Error Handling
 
-- **No primary CTA route** — ask before generating any prompts; every section's button needs a destination
-- **Wants to combine hero + features in one prompt** — refuse; visual direction must be confirmed on hero before adding more
-- **No product description** — ask for a one-line description; without it the headline and copy cannot be written
+- **ไม่รู้ primary_cta_route** — ถามก่อน ทุก CTA ต้องการ route
+- **อยากรวม hero + features ใน chain เดียว** — แยกเป็น sub-section ใน Chain 2 ได้ แต่ยังอยู่ใน chain เดียว
+- **ไม่มี backend** — ข้าม Chain 3 เลย รวม 3 chains
 
 ## Examples
 
-### Example 1: SaaS Landing Page with Pricing
+### ตัวอย่าง: SaaS Landing Page
 
-**Input:** Product: Compose (AI writing tool), CTA: "Try Compose free" → /signup, has_pricing: true, plans: [Starter, Pro, Business]
+**Input:** product: Compose (AI เขียน content), CTA: "ทดลองฟรี" → /signup, sections: [hero, features, testimonials, pricing, faq, cta-banner], has_pricing: true, plans: [Starter, Pro]
 
-**Phases:**
-1. Stack + Base Layout (navbar: Features, Pricing, Sign in, "Try free" button)
-2. Hero (headline, subheadline, primary + secondary CTA, product screenshot)
-3. Features Grid (6 cards: Drafts in seconds, Tone control, etc.)
-4. Testimonials (6 quotes from marketing professionals)
-5. Pricing Section (monthly/annual toggle, 3 plan cards)
-6. FAQ (6 questions about the product)
-7. Final CTA Banner ("Start writing faster today")
-8. SEO + Performance
-
-**Total: 8 phases**
-
-### Example 2: Pre-Launch Waitlist
-
-**Input:** Product: Nova (AI calendar), CTA: "Join the waitlist" → /waitlist, no pricing, sections: [hero, features, cta-banner]
-
-**Phases:**
-1. Stack + Base Layout
-2. Hero (countdown or "launching soon" badge, email capture CTA)
-3. Features (3-card teaser of upcoming features)
-4. Final CTA Banner
-5. SEO
-
-**Total: 5 phases**
+- Chain 1: Navbar (Features, Pricing, Sign in, "ทดลองฟรี"), footer
+- Chain 2: Hero + 6 feature cards + 6 testimonials + pricing toggle + FAQ + CTA banner
+- Chain 3: ข้าม (ไม่มี form/waitlist)
+- Chain 4: SEO meta, lazy loading, scroll animations, mobile audit

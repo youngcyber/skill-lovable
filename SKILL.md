@@ -1,197 +1,210 @@
 ---
 name: lovable-vibe-coder
-description: "Transform any web app idea into a sequenced, phase-by-phase Lovable prompt plan following vibe coding best practices. Each phase outputs a ready-to-paste prompt that produces one working, testable result."
+description: "รับ idea แอปเป็นภาษาไทย แล้วสร้าง prompt แบบ chain pattern สำหรับ Lovable ใน 4 ชั้น: โครงสร้าง → ฟีเจอร์หลัก → จัดการข้อมูล → เก็บรายละเอียด"
 ---
 
 # Lovable Vibe Coder
 
-Turn a web app idea into a complete build plan — a numbered sequence of Lovable prompts, each scoped to one phase, each ending with a testable checkpoint. The user pastes one prompt at a time and verifies it works before moving to the next.
+รับ idea แอปจาก user แล้วแปลงเป็น chain prompt พร้อม paste เข้า Lovable ทีละ chain ตามลำดับ ทุกอย่างตอบกลับเป็นภาษาไทย
 
 ## When to Use
 
-- User says "I want to build [app] with Lovable"
-- User has a Lovable project and wants to know what to build next
-- User asks "how do I start building X in Lovable?"
-- User wants a vague idea broken into actionable steps
-- User wants to know the right order to build features
+- User บอกว่า "อยากสร้างแอป..." หรือ "อยากทำเว็บ..." ด้วย Lovable
+- User ถามว่าจะเริ่มต้น build อะไรก่อนใน Lovable
+- User มี idea คร่าวๆ แล้วอยากให้แบ่งเป็นขั้นตอน
+- User ใช้ภาษาไทยในการอธิบาย project
 
 ## Input Schema
 
 ```yaml
-app_name: string          # REQUIRED — name of the app
-app_description: string   # REQUIRED — what the app does and who it's for
-core_features: list       # REQUIRED — 3-5 main things users do in the app
-auth_required: boolean    # OPTIONAL — default: true
-paid_plans: boolean       # OPTIONAL — default: false
-user_roles: list          # OPTIONAL — e.g. [user, admin] — default: [user]
-stack_override: string    # OPTIONAL — override default stack if specified
+app_name: string          # ชื่อแอป
+app_description: string   # แอปทำอะไร สำหรับใคร
+core_features: list       # ฟีเจอร์หลัก 3-5 อย่าง
+has_auth: boolean         # ต้องการระบบ login หรือไม่ — default: true
+has_payment: boolean      # มีการชำระเงินหรือไม่ — default: false
+user_roles: list          # บทบาทผู้ใช้ เช่น [user, admin]
+app_type: string          # ประเภทแอป: saas / landing / dashboard / ecommerce / form
 ```
 
 ## Workflow
 
-### Step 1: Clarify the Idea
+### Step 1: ทำความเข้าใจ idea
 
-If any required input is missing, ask one focused question to fill the gap. Do not ask more than one question at a time. If enough context exists, skip to Step 2.
+ถ้า user บอก idea ไม่ครบ ให้ถามคำถามเดียวที่สำคัญที่สุดก่อน เช่น "ฟีเจอร์หลักที่ user จะทำในแอปนี้คืออะไรบ้าง?" อย่าถามหลายคำถามพร้อมกัน
 
-### Step 2: Identify the App Type
+### Step 2: จำแนกประเภทแอป
 
-Classify the app into one or more categories:
-- **SaaS** — authenticated users, persistent data, subscriptions → use `skills/saas-apps/SKILL.md`
-- **Landing Page** — public marketing site, no auth → use `skills/landing-pages/SKILL.md`
-- **Dashboard** — data visualization, admin views → use `skills/dashboards/SKILL.md`
-- **E-Commerce** — products, cart, checkout → use `skills/e-commerce/SKILL.md`
-- **Forms** — data collection, multi-step wizards → use `skills/forms/SKILL.md`
-- **Data Management** — CRUD, kanban, import/export → use `skills/data/SKILL.md`
+- **SaaS** → ใช้ `skills/saas-apps/SKILL.md`
+- **Landing Page** → ใช้ `skills/landing-pages/SKILL.md`
+- **Dashboard** → ใช้ `skills/dashboards/SKILL.md`
+- **E-Commerce** → ใช้ `skills/e-commerce/SKILL.md`
+- **Form** → ใช้ `skills/forms/SKILL.md`
+- **Data Management** → ใช้ `skills/data/SKILL.md`
 
-For apps that span multiple types, combine phases from both in the master order below.
+### Step 3: สร้าง Chain Prompt ใน 4 ชั้น
 
-### Step 3: Select Phases
-
-Use this master phase order. Skip phases that do not apply:
+แบ่ง prompt ออกเป็น 4 chain ตามลำดับนี้เสมอ:
 
 ```
-Phase 1  → Stack Declaration
-Phase 2  → Authentication + Profiles    (skip if auth_required = false)
-Phase 3  → Database Schema
-Phase 4  → App Layout Shell
-Phase 5  → Onboarding Flow              (SaaS only)
-Phase 6  → Core Feature #1
-Phase 7  → Core Feature #2
-Phase 8  → Core Feature #3              (repeat as needed)
-Phase 9  → Settings Page               (skip if auth_required = false)
-Phase 10 → Billing + Stripe            (skip if paid_plans = false)
-Phase 11 → Admin Panel                 (skip if single user role)
-Phase 12 → Empty States + Error Handling
-Phase 13 → Polish + Animations
-Phase 14 → SEO + Performance           (public-facing apps only)
+Chain 1 → โครงสร้าง (Structure)
+          Layout shell, navigation, หน้าเปล่าทุกหน้า, สีและ typography
+          ห้าม implement logic หรือ backend ในชั้นนี้
+
+Chain 2 → ฟีเจอร์หลัก (Core Features)
+          UI ของแต่ละฟีเจอร์, interaction, การแสดงผลข้อมูล
+          ใช้ข้อมูล mock/hardcode ได้ก่อน ยังไม่ต้อง connect database
+
+Chain 3 → จัดการข้อมูล (Data Management)
+          Supabase schema, auth, CRUD operations, connect UI กับ database
+          ทำทีละฟีเจอร์ อย่า connect ทุกอย่างพร้อมกัน
+
+Chain 4 → เก็บรายละเอียด (Details & Polish)
+          Loading states, empty states, error handling, mobile responsive,
+          animations, SEO — ทำหลังทุกฟีเจอร์ทำงานได้แล้ว
 ```
 
-**Ordering rules (never break these):**
-- Stack always Phase 1 — locks in tech before Lovable guesses
-- Auth before any feature — no protected-route refactor later
-- Schema before UI — data shape must be stable before components read it
-- Core features before settings/billing — build the product before wrapping it
-- Polish and SEO always last
+**กฎที่ห้ามละเมิด:**
+- Chain 1 (โครงสร้าง) ต้องมาก่อนเสมอ — ต้องเห็น UI ก่อน connect database
+- Chain 2 (ฟีเจอร์) ก่อน Chain 3 (ข้อมูล) — สร้าง UI ก่อน แล้วค่อย wire database
+- Chain 4 เป็นชั้นสุดท้ายเสมอ — polish หลังทุกอย่างทำงานได้
+- แต่ละ chain ต้องมี "เสร็จเมื่อ" checklist ที่ตรวจสอบได้จริง
 
-### Step 4: Write Each Phase Prompt
+### Step 4: เขียน Prompt แต่ละ Chain
 
-For every selected phase, write a complete Lovable prompt:
+รูปแบบ prompt ที่ถูกต้อง:
 
 ```
-[WHAT TO BUILD — one clear sentence]
+[สิ่งที่จะสร้าง — ประโยคเดียวชัดเจน]
 
-[CONTEXT — who uses it, what it does, where it lives in the app]
+Context:
+- ใครใช้: [บทบาท user]
+- เป้าหมาย: [user ต้องการทำอะไร]
+- อยู่ที่ไหน: [route หรือ section ในแอป]
 
-[TECHNICAL SPEC — tables, endpoints, components, stack constraints]
+Tech Stack:
+- React + Vite + TypeScript
+- Tailwind CSS + shadcn/ui
+- [เพิ่มเติมตามที่จำเป็น]
 
-[BEHAVIOR — interactions, states, edge cases]
+[รายละเอียด spec: columns, fields, behavior, design]
 
-[DESIGN — layout, responsive breakpoints, component names from shadcn/ui]
-
-Done when:
-- [ ] [Specific testable outcome]
-- [ ] [Specific testable outcome]
-- [ ] [Specific testable outcome]
+เสร็จเมื่อ:
+- [ ] [ผลลัพธ์ที่ตรวจสอบได้]
+- [ ] [ผลลัพธ์ที่ตรวจสอบได้]
+- [ ] [ผลลัพธ์ที่ตรวจสอบได้]
 ```
 
-Rules:
-- Complete and pasteable — no `[FILL THIS IN]` remaining
-- One concern per prompt — never combine two phases
-- 3–5 "Done when" checkboxes, each specific and verifiable
-- Include loading, empty, and error states for every data-fetching feature
-- Reference exact component names from previous phases
+### Step 5: ส่ง Plan ทั้งหมด
 
-### Step 5: Output the Full Plan
-
-Present all phases in order. End with total phase count and the instruction to verify each phase before advancing.
+แสดงทั้ง 4 chain พร้อม prompt ที่ paste ได้เลย พร้อมบอก user ให้ verify checklist ก่อนไป chain ถัดไป
 
 ## Output Schema
 
 ```yaml
-plan_title: string        # "[App Name] — Build Plan"
-app_summary: string       # One sentence confirming the understood idea
-phases:
-  - number: integer       # Phase number
-    name: string          # Phase name
-    goal: string          # One-sentence goal
-    prompt: string        # Complete ready-to-paste Lovable prompt
-    done_when: list       # 3-5 specific testable checkboxes
-total_phases: integer
-closing_note: string      # "Paste Phase 1 into Lovable. Verify every checkbox before pasting Phase 2."
+plan_title: string        # "[ชื่อแอป] — Build Plan"
+app_summary: string       # สรุปหนึ่งประโยคว่าเข้าใจ idea ถูกต้อง
+chains:
+  - number: integer       # Chain 1-4
+    name: string          # ชื่อ chain (โครงสร้าง / ฟีเจอร์หลัก / จัดการข้อมูล / เก็บรายละเอียด)
+    goal: string          # เป้าหมายของ chain นี้
+    prompt: string        # Prompt ที่พร้อม paste เข้า Lovable
+    done_when: list       # Checklist 3-5 ข้อ
+total_chains: integer
 ```
 
 ## Output Format
 
 ```
-# [App Name] — Build Plan
-> [One sentence confirming the understood idea]
+# [ชื่อแอป] — Build Plan
+> [สรุปหนึ่งประโยค]
 
 ---
 
-## Phase 1 — Stack Declaration
-**Goal:** Lock in the tech stack before Lovable makes choices.
+## Chain 1 — โครงสร้าง
+**เป้าหมาย:** สร้าง layout shell และ navigation ก่อน implement logic ใดๆ
 
-[COMPLETE LOVABLE PROMPT]
+[PROMPT ที่พร้อม paste]
 
-**Done when:**
+**เสร็จเมื่อ:**
 - [ ] ...
-- [ ] ...
-- [ ] ...
-
----
-
-## Phase 2 — [Name]
-**Goal:** ...
-
-[COMPLETE LOVABLE PROMPT]
-
-**Done when:**
 - [ ] ...
 
 ---
 
-**Total phases: N**
-Paste Phase 1 into Lovable. Verify every checkbox before pasting Phase 2.
+## Chain 2 — ฟีเจอร์หลัก
+**เป้าหมาย:** UI และ interaction ของแต่ละฟีเจอร์ด้วยข้อมูล mock
+
+[PROMPT]
+
+**เสร็จเมื่อ:**
+- [ ] ...
+
+---
+
+## Chain 3 — จัดการข้อมูล
+**เป้าหมาย:** Connect database และ wire ฟีเจอร์ทุกตัวเข้ากับ Supabase
+
+[PROMPT]
+
+**เสร็จเมื่อ:**
+- [ ] ...
+
+---
+
+## Chain 4 — เก็บรายละเอียด
+**เป้าหมาย:** Loading states, error handling, mobile, polish
+
+[PROMPT]
+
+**เสร็จเมื่อ:**
+- [ ] ...
+
+---
+
+**รวม 4 Chains**
+Paste Chain 1 เข้า Lovable ก่อน ✓ ทุก checkbox แล้วค่อยไป Chain 2
 ```
 
 ## Error Handling
 
-- **Idea too vague** — ask one clarifying question, do not generate phases until the app purpose is clear
-- **App spans multiple types** — combine relevant phase lists, maintain the master ordering, do not duplicate phases
-- **User wants to skip a phase** — warn which later phase depends on it and what will break if skipped
+- **Idea ไม่ชัดเจน** — ถามคำถามเดียวที่สำคัญที่สุด อย่าสร้าง prompt จน user ตอบแล้ว
+- **User อยากรวม database กับ UI ในชั้นเดียว** — อธิบายว่า chain pattern แยก front-end ออกก่อน แล้วค่อย wire backend ใน Chain 3 ได้ผลลัพธ์ดีกว่า
+- **มีหลาย app type** — รวม chain จากทั้งสอง type ตามลำดับที่ถูกต้อง ไม่ duplicate
 
 ## Examples
 
-### Example 1: SaaS Habit Tracker
+### ตัวอย่าง 1: SaaS จัดการ Task
 
-**Input:** "I want to build a habit tracker SaaS called Streaks"
+**Input:** "อยากทำแอป task manager ชื่อ Taskly สำหรับทีมเล็กๆ"
 
-**Selected phases:**
-1. Stack Declaration
-2. Authentication + Profiles
-3. Database Schema (habits, completions)
-4. App Layout Shell
-5. Onboarding (name your first habit)
-6. Habit list + daily check-in
-7. Streak counter + calendar view
-8. Settings Page
-9. Empty States + Error Handling
-10. Polish + Animations
+```
+Chain 1 — โครงสร้าง
+สร้าง layout shell: sidebar, navbar, หน้า dashboard เปล่า, หน้า tasks เปล่า
 
-**Total: 10 phases**
+Chain 2 — ฟีเจอร์หลัก
+Task list ที่แสดง mock data, form สร้าง task, drag-to-complete checkbox
 
-### Example 2: E-Commerce Store
+Chain 3 — จัดการข้อมูล
+Supabase: tasks table + auth + RLS, connect form กับ database, real CRUD
 
-**Input:** "Build an online candle store called Wax & Wick"
+Chain 4 — เก็บรายละเอียด
+Skeleton loading, empty state "ยังไม่มี task", error toast, mobile layout
+```
 
-**Selected phases:**
-1. Stack + Store Layout (nav, footer, CartContext)
-2. Product Catalog
-3. Product Detail Page
-4. Shopping Cart Slide-over
-5. Checkout (Stripe)
-6. Order Confirmation + History
-7. Admin — Order Management
-8. SEO + Performance
+### ตัวอย่าง 2: ร้านค้าออนไลน์
 
-**Total: 8 phases**
+**Input:** "อยากทำเว็บขายเทียนหอมชื่อ Wax & Wick"
+
+```
+Chain 1 — โครงสร้าง
+Navbar, footer, หน้า /shop grid เปล่า, หน้า product detail เปล่า
+
+Chain 2 — ฟีเจอร์หลัก
+Product cards ด้วย mock data, cart slide-over UI, checkout form UI
+
+Chain 3 — จัดการข้อมูล
+Supabase products table, CartContext + localStorage, Stripe checkout
+
+Chain 4 — เก็บรายละเอียด
+Lazy loading รูป, "Out of stock" state, mobile-first layout, SEO meta tags
+```

@@ -1,172 +1,309 @@
 ---
 name: lovable-ecommerce-planner
-description: "Generate a phase-by-phase Lovable prompt plan for building e-commerce storefronts — product catalog, shopping cart with CartContext, Stripe checkout, and order management."
+description: "รับ idea ร้านค้าออนไลน์ แล้วสร้าง prompt แบบ chain pattern 4 ชั้นสำหรับ Lovable: โครงสร้าง → catalog & cart → checkout & payment → เก็บรายละเอียด รองรับภาษาไทย"
 ---
 
 # Lovable E-Commerce Planner
 
-Turn an online store idea into a sequenced build plan. E-commerce apps follow a strict order: cart context before product pages (because "Add to cart" reads from it), and Stripe after the cart total exists.
+สร้าง chain prompt สำหรับร้านค้าออนไลน์บน Lovable ใน 4 ชั้น สร้าง product catalog UI ก่อน แล้วค่อย connect cart, payment, และ admin
 
 ## When to Use
 
-- User wants to build an online store with Lovable
-- User needs a product catalog, shopping cart, or checkout flow
-- User asks about Stripe integration in a Lovable project
-- User wants to add e-commerce features to an existing Lovable app
+- User อยากสร้างร้านค้าออนไลน์หรือ e-commerce store ด้วย Lovable
+- User พูดถึง product catalog, shopping cart, หรือ checkout
+- User ต้องการรับชำระเงินผ่าน Stripe
+- User ใช้ภาษาไทยในการอธิบายร้านค้า
 
 ## Input Schema
 
 ```yaml
-store_name: string          # REQUIRED — name of the store
-product_type: string        # REQUIRED — what is being sold, e.g. "handmade jewelry"
-has_variants: boolean       # OPTIONAL — do products have sizes, colors, etc. — default: false
-payment_method: string      # OPTIONAL — "stripe-checkout" | "stripe-elements" — default: stripe-elements
-auth_required: boolean      # OPTIONAL — guest checkout or login required — default: false
-needs_admin: boolean        # OPTIONAL — seller needs order + product management — default: false
-catalog_size: string        # OPTIONAL — "small" (< 50) | "large" (50+) — default: small
+store_name: string          # ชื่อร้าน
+product_type: string        # ประเภทสินค้า เช่น "เทียนหอม", "คอร์สออนไลน์", "เสื้อผ้า"
+product_fields: list        # field ของสินค้า เช่น [name, price, description, images, category, stock]
+has_variants: boolean       # สินค้ามี variant เช่น สี/ขนาด — default: false
+variant_options: list       # เช่น [color, size] ถ้า has_variants: true
+has_categories: boolean     # มีหมวดหมู่สินค้า — default: true
+payment_method: string      # "stripe" | "prompt_pay" | "both"
+has_admin: boolean          # มีหน้า admin จัดการสินค้า — default: true
 ```
 
 ## Workflow
 
-### Step 1: Clarify Requirements
+### Step 1: ทำความเข้าใจร้านค้า
 
-If `product_type` is missing, ask before generating phases. If `needs_admin` is true but no roles are specified, default to adding an `admin` role to the profiles table.
+ถ้าไม่รู้ `product_type` หรือ `payment_method` ให้ถามก่อน — สองอย่างนี้กำหนด chain 2 และ 3 ทั้งหมด
 
-### Step 2: Select Phases
+### Step 2: วาง 4 Chain
 
 ```
-Phase 1 → Stack + Store Layout (navbar, footer, CartContext)
-Phase 2 → Product Catalog (/shop with filters)
-Phase 3 → Product Detail Page
-Phase 4 → Shopping Cart Slide-over
-Phase 5 → Checkout Flow (Stripe)
-Phase 6 → Order Confirmation + History   (if auth_required: true)
-Phase 7 → Admin — Order Management      (if needs_admin: true)
-Phase 8 → Admin — Product Management    (if needs_admin: true)
-Phase 9 → Empty States + Error Handling
-Phase 10 → SEO + Performance
+Chain 1 → โครงสร้าง: Navbar, footer, /shop grid เปล่า, /product/:id เปล่า
+Chain 2 → ฟีเจอร์หลัก: Product cards, cart UI, checkout form (mock data)
+Chain 3 → จัดการข้อมูล: Supabase products table, CartContext, Stripe checkout
+Chain 4 → เก็บรายละเอียด: Image lazy load, stock badge, mobile, SEO
 ```
 
-**Ordering rules that must never be broken:**
-- CartContext (Phase 1) before product detail (Phase 3) — "Add to cart" reads from context
-- Cart slide-over (Phase 4) before checkout (Phase 5) — checkout reads from CartContext
-- Stripe only after the cart total is computable
-- Admin panels always after the customer storefront
-- SEO always last
+### Step 3: เขียน Prompt แต่ละ Chain
 
-### Step 3: Write Each Phase Prompt
+---
 
-**CartContext rules (Phase 1):**
-- Persist to localStorage — cart survives page refresh
-- addItem: adding same product increases qty, never creates a duplicate row
-- Checkout button disabled when cart is empty
+**Chain 1 — โครงสร้าง**
 
-**Product catalog rules (Phase 2):**
-- Infinite scroll — load PAGE_SIZE products, fetch next when 300px from bottom
-- "SALE" badge only when compare_at_price > price
-- Out-of-stock overlay disables "Add to cart"
-- Filter state in URL params
+```
+สร้าง layout shell สำหรับร้าน [ชื่อร้าน]
 
-**Checkout rules (Phase 5):**
-- 3 steps: Shipping → Payment → Confirmation
-- Full-screen spinner overlay during Stripe submit — prevents double-submission
-- On Stripe error: show error.message inline above "Place order" — do not clear the form
-- clearCart() called only on reaching step 3 (Confirmation)
-- Order inserted into Supabase orders table on success
+Tech stack:
+- React + Vite + TypeScript
+- Tailwind CSS + shadcn/ui
+- React Router v6
+- Lucide React
 
-### Step 4: Output the Plan
+Navbar:
+- โลโก้ "[ชื่อร้าน]" (font-bold) ซ้าย
+- Nav links: [หมวดหมู่ถ้ามี], About, Contact
+- Cart icon (ShoppingBag จาก Lucide) ขวาสุด พร้อม badge "0"
+- Sticky เมื่อ scroll
 
-List all phases in order with complete prompts and checklists.
+Footer:
+- โลโก้ + tagline
+- Link columns: Shop, Company, Support
+- Bottom bar: copyright + Privacy + Terms
+- bg-gray-900 text-white
+
+สร้าง routes เปล่า:
+- /shop → Grid product placeholder 6 ใบ (gray-100 bg, h-64)
+- /product/:id → placeholder centered
+- /cart → placeholder centered
+- /checkout → placeholder centered
+[ถ้า has_admin:] /admin → placeholder centered (จะ protect ทีหลัง)
+
+เสร็จเมื่อ:
+- [ ] Navbar render พร้อม cart icon badge "0"
+- [ ] Footer render ครบ
+- [ ] /shop, /product/:id, /cart, /checkout render ได้
+- [ ] Navbar sticky ทำงาน
+- [ ] Mobile hamburger เปิด/ปิดได้
+```
+
+---
+
+**Chain 2 — ฟีเจอร์หลัก**
+
+```
+เพิ่ม product catalog, cart, และ checkout UI ให้ [ชื่อร้าน] ด้วย mock data
+
+ใช้ const mockProducts = [...] hardcode ในไฟล์ก่อน
+
+หน้า /shop:
+- Product grid: 3 cols desktop, 2 tablet, 1 mobile
+- Product card: รูป 4:3 (placeholder gray-100), ชื่อ, ราคา "฿X,XXX", ปุ่ม "เพิ่มลงตะกร้า"
+- [ถ้า has_categories:] Filter bar ด้านบน: All / [หมวดหมู่ต่างๆ] — filter ได้ใน mock
+- Empty state เมื่อ filter ไม่มีสินค้า
+
+หน้า /product/:id:
+- รูปหลักขนาดใหญ่ + thumbnails row (placeholder)
+- ชื่อสินค้า h1, ราคา, description
+- [ถ้า has_variants:] Selector: [color/size options] — เลือกได้, อัปเดตราคาถ้าต่างกัน
+- Quantity stepper: − [n] +
+- ปุ่ม "เพิ่มลงตะกร้า" เต็ม width (indigo-600)
+- In-stock / Out of stock badge
+
+Cart (slide-over panel, เปิดจาก cart icon):
+- รายการสินค้า: thumbnail + ชื่อ + ราคา + quantity stepper + ลบ
+- Subtotal, Shipping (TBD), Total
+- ปุ่ม "ดำเนินการชำระเงิน" → /checkout
+
+หน้า /checkout:
+- ฟอร์มที่อยู่: ชื่อ, เบอร์โทร, บ้านเลขที่, แขวง/ตำบล, เขต/อำเภอ, จังหวัด, รหัสไปรษณีย์
+- Order summary sidebar (sticky บน desktop)
+- ปุ่ม "ชำระเงิน" → console.log ก่อน (จะ connect Stripe ใน chain ถัดไป)
+
+CartContext (src/context/CartContext.tsx):
+- state: items[], addItem, removeItem, updateQty, clearCart, total
+- persist ใน localStorage
+
+เสร็จเมื่อ:
+- [ ] /shop แสดง product cards จาก mock data
+- [ ] Filter หมวดหมู่ทำงานใน mock
+- [ ] เพิ่มสินค้า → cart badge อัปเดต
+- [ ] Cart slide-over แสดงรายการและ total
+- [ ] /checkout แสดงฟอร์มและ order summary
+- [ ] Quantity +/- ทำงานใน cart
+```
+
+---
+
+**Chain 3 — จัดการข้อมูล**
+
+```
+เชื่อม [ชื่อร้าน] กับ Supabase และ Stripe
+
+1. Supabase Schema:
+
+products (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  description text,
+  price integer not null,           -- เก็บเป็น satang/สตางค์ (คูณ 100)
+  images text[] default '{}',
+  category text,
+  stock integer not null default 0,
+  is_active boolean default true,
+  created_at timestamptz default now()
+)
+RLS: SELECT เปิดสำหรับทุกคน (public)
+     INSERT/UPDATE/DELETE เฉพาะ role = 'admin'
+
+[ถ้า has_variants:]
+product_variants (
+  id uuid primary key default gen_random_uuid(),
+  product_id uuid references products on delete cascade,
+  [option_fields เช่น color text, size text],
+  price_modifier integer default 0,
+  stock integer not null default 0
+)
+
+orders (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users,
+  stripe_session_id text unique,
+  status text default 'pending',   -- pending / paid / shipped / cancelled
+  total integer not null,
+  shipping_address jsonb,
+  created_at timestamptz default now()
+)
+order_items (
+  id uuid primary key default gen_random_uuid(),
+  order_id uuid references orders on delete cascade,
+  product_id uuid references products,
+  quantity integer not null,
+  unit_price integer not null
+)
+RLS: SELECT/UPDATE เฉพาะ user_id = auth.uid() สำหรับ orders/order_items
+
+2. Connect /shop กับ Supabase:
+- แทน mockProducts ด้วย query: SELECT * FROM products WHERE is_active = true
+- Filter หมวดหมู่: .eq('category', selected)
+
+3. Stripe Checkout:
+- ติดตั้ง Stripe: Supabase Edge Function "create-checkout-session"
+  - รับ: items[] (product_id, qty, price)
+  - สร้าง Stripe Checkout Session (mode: 'payment')
+  - line_items จาก cart
+  - success_url: [domain]/checkout/success?session_id={CHECKOUT_SESSION_ID}
+  - cancel_url: [domain]/checkout
+- ปุ่ม "ชำระเงิน" → เรียก Edge Function → redirect ไป Stripe
+- หน้า /checkout/success: verify session, บันทึก order ใน Supabase, เคลียร์ cart
+- หน้า /checkout/cancel: แสดง "ยกเลิกการชำระเงิน" พร้อม back button
+
+[ถ้า has_admin:]
+4. Admin page /admin/products (protect เฉพาะ role = 'admin'):
+- ตาราง product ทั้งหมด: ชื่อ, ราคา, stock, is_active toggle
+- ปุ่ม "เพิ่มสินค้า" → modal form ทุก field
+- Edit inline หรือ slide-over
+- Upload รูป → Supabase Storage bucket "product-images"
+
+เสร็จเมื่อ:
+- [ ] /shop ดึงสินค้าจาก Supabase ได้
+- [ ] Cart + Stripe → redirect ไป Stripe Checkout จริง
+- [ ] หลัง payment สำเร็จ order บันทึกใน Supabase
+- [ ] /checkout/success แสดง order summary
+- [ ] Admin เพิ่ม/แก้ไขสินค้าได้ (ถ้า has_admin)
+```
+
+---
+
+**Chain 4 — เก็บรายละเอียด**
+
+```
+เพิ่ม UX, performance, และ polish ให้ [ชื่อร้าน]
+
+Images:
+- Product card: loading="lazy", width + height explicit
+- Product detail หลัก: fetchpriority="high"
+- Supabase Storage URL: ใช้ transform API สำหรับ resize (width: 400, quality: 80)
+
+Stock:
+- stock > 10: ไม่แสดงอะไร
+- stock 1-10: badge "เหลือ [n] ชิ้น" สีเหลือง
+- stock 0: badge "สินค้าหมด" สีแดง, disable ปุ่ม "เพิ่มลงตะกร้า"
+
+Loading states:
+- /shop: skeleton cards 6 ใบ animate-pulse ขณะโหลด
+- Product detail: skeleton ทั้งหน้า
+- "เพิ่มลงตะกร้า" ปุ่ม: spinner ขณะ process
+
+Mobile:
+- Product grid: 2 cols บน mobile 375px
+- Cart slide-over: full-screen บน mobile
+- Checkout: ฟอร์ม stacks, summary อยู่บนสุดบน mobile
+
+SEO (react-helmet-async):
+- /shop: title "[ชื่อร้าน] — ร้านค้าออนไลน์"
+- /product/:id: title "[ชื่อสินค้า] — [ชื่อร้าน]", og:image: product image URL
+- Canonical URL ทุกหน้า
+
+Error:
+- สินค้าหมด + ยังอยู่ใน cart → แจ้ง "สินค้าหมดแล้ว" เมื่อเปิด cart
+- Stripe error → แสดง "ชำระเงินไม่สำเร็จ กรุณาลองใหม่" ไม่ใช่ blank หน้า
+
+เสร็จเมื่อ:
+- [ ] รูปทุกรูปมี lazy loading (ยกเว้น above-the-fold)
+- [ ] Stock badge แสดงถูกต้อง
+- [ ] Skeleton loading แสดงบน /shop
+- [ ] Mobile layout ใช้ได้บน 375px
+- [ ] SEO meta tags ครบทุกหน้า
+```
 
 ## Output Schema
 
 ```yaml
 plan_title: string          # "[Store Name] — E-Commerce Build Plan"
-store_summary: string       # One sentence: product type, key features
-phases:
+store_summary: string       # สรุปหนึ่งประโยค
+chains:
   - number: integer
     name: string
     goal: string
-    prompt: string           # Complete ready-to-paste Lovable prompt
+    prompt: string
     done_when: list
-total_phases: integer
+total_chains: 4
 ```
 
 ## Output Format
 
 ```
-# [Store Name] — E-Commerce Build Plan
-> [One sentence: product type and key features]
+# [ชื่อร้าน] — E-Commerce Build Plan
+> [สรุปหนึ่งประโยค]
 
 ---
 
-## Phase 1 — Stack + Store Layout
-**Goal:** CartContext and store shell before any product pages.
+## Chain 1 — โครงสร้าง
+**เป้าหมาย:** Navbar, footer, routes เปล่าทุกหน้า
 
-[COMPLETE LOVABLE PROMPT]
+[PROMPT]
 
-**Done when:**
-- [ ] Navbar renders with cart icon (badge hidden when 0)
-- [ ] CartContext persists to localStorage across page refreshes
-- [ ] Footer renders with all links
-- [ ] / route renders with "Shop now" link → /shop
+**เสร็จเมื่อ:** ...
 
 ---
-
-## Phase 4 — Shopping Cart Slide-over
-**Goal:** Working cart before building checkout.
-
-[COMPLETE LOVABLE PROMPT]
-
-**Done when:**
-- [ ] Cart persists across page refreshes
-- [ ] Adding same product twice increases qty, not item count
-- [ ] Checkout button disabled when cart is empty
-- [ ] Escape and overlay click close the cart
-
+(Chain 2, 3, 4)
 ---
 
-**Total phases: N**
-Paste Phase 1 into Lovable. Verify every checkbox before pasting Phase 2.
+**รวม 4 Chains**
+Paste Chain 1 เข้า Lovable ✓ ทุก checkbox แล้วไป Chain 2
 ```
 
 ## Error Handling
 
-- **User wants to build checkout before cart** — refuse and explain that checkout reads from CartContext which must exist first
-- **Stripe not connected** — remind user to add Stripe keys in Lovable project settings before writing Phase 5
-- **has_variants: true** — add a variant selector section to Phase 3 prompt and a variants table to Phase 1 schema
+- **ไม่รู้ payment method** — ถามก่อน เพราะกำหนด Chain 3 ทั้งหมด
+- **ต้องการ PromptPay** — ใช้ Stripe Payment Element (รองรับ PromptPay) แทน Stripe Checkout
+- **ไม่มี admin** — ข้ามส่วน admin ใน Chain 3, รวม 4 chains เหมือนเดิม
 
 ## Examples
 
-### Example 1: Handmade Jewelry Store
+### ตัวอย่าง: ร้านขายเทียนหอม "Wax & Wick"
 
-**Input:** Store: Goldenleaf, product: handmade jewelry, variants: true (ring sizes), payment: stripe-elements, auth: false, admin: true
+**Input:** store: Wax & Wick, product_type: เทียนหอม, variants: [scent, size], categories: true, payment: stripe, admin: true
 
-**Phases:**
-1. Stack + Store Layout + CartContext
-2. Product Catalog (filter by category, price, in-stock)
-3. Product Detail (image gallery, size selector, "Add to cart")
-4. Shopping Cart Slide-over
-5. Checkout (shipping + Stripe Elements + confirmation)
-6. Admin — Order Management
-7. Admin — Product Management (with image upload)
-8. Empty States + Error Handling
-9. SEO + Performance
-
-**Total: 9 phases**
-
-### Example 2: Digital Products Store
-
-**Input:** Store: DesignKit, product: Figma UI kits (digital downloads), variants: false, payment: stripe-checkout, auth: true, admin: false
-
-**Phases:**
-1. Stack + Store Layout + CartContext
-2. Product Catalog (grid, category filter)
-3. Product Detail (preview images, license info, "Buy now")
-4. Shopping Cart Slide-over
-5. Checkout (Stripe Checkout redirect)
-6. Order Confirmation + Download links
-7. Empty States + Error Handling
-8. SEO + Performance
-
-**Total: 8 phases**
+- Chain 1: Navbar (logo, หมวดหมู่ dropdown, cart icon), footer, /shop /product/:id /cart /checkout /admin
+- Chain 2: Product grid 3 cols mock, Scent/Size selector, Cart slide-over, Checkout address form
+- Chain 3: Supabase products + product_variants + orders + order_items, Stripe Checkout Edge Function, Admin CRUD + image upload
+- Chain 4: Lazy loading รูป, stock badges, skeleton loading, mobile 2-col grid, SEO meta
