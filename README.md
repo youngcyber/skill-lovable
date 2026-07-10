@@ -9,11 +9,15 @@ Vague prompts produce vague apps. This repository captures battle-tested pattern
 ## Repository Structure
 
 ```
-├── prompts/          # Category-specific prompt guides
-│   ├── landing-pages.md
-│   ├── saas-apps.md
-│   ├── dashboards.md
-│   └── e-commerce.md
+├── skill.md          # Root skill — general Lovable phase planner
+├── skills/           # Domain-specific phase planner skills
+│   ├── auth/skill.md
+│   ├── landing-pages/skill.md
+│   ├── dashboards/skill.md
+│   ├── e-commerce/skill.md
+│   ├── forms/skill.md
+│   ├── saas-apps/skill.md
+│   └── data/skill.md
 ├── templates/        # Reusable prompt scaffolds
 │   ├── component-prompt.md
 │   ├── feature-request.md
@@ -77,6 +81,20 @@ When complete:
 - [ ] A success toast appears after submission
 - [ ] The form resets after success
 ```
+
+## Skills (Phase Planners)
+
+Each skill takes your app idea and outputs a ready-to-paste, phase-by-phase Lovable prompt plan.
+
+| Skill | Best for |
+|-------|----------|
+| [SaaS Apps](skills/saas-apps/skill.md) | Full-stack SaaS — auth, features, billing, admin |
+| [Auth](skills/auth/skill.md) | Login, OAuth, magic link, protected routes, RBAC |
+| [Landing Pages](skills/landing-pages/skill.md) | Marketing sites — hero, pricing, testimonials, SEO |
+| [Dashboards](skills/dashboards/skill.md) | Analytics, admin panels, KPI charts, data tables |
+| [E-Commerce](skills/e-commerce/skill.md) | Product catalog, cart, Stripe checkout, orders |
+| [Forms](skills/forms/skill.md) | Contact forms, multi-step wizards, file uploads |
+| [Data Management](skills/data/skill.md) | CRUD tables, kanban, CSV import/export, real-time |
 
 ## Quick-Start Templates
 
