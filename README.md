@@ -77,6 +77,13 @@ Chain 4     — Polish
 | [Data Management](skills/data/SKILL.md) | CRUD table, kanban, drag-to-reorder, CSV |
 | [Sub-Chain (v2)](skills/sub-chain/SKILL.md) | ลด regression — 1 prompt ต่อ 1 component |
 
+## เครดิต
+
+สร้างโดย **อัครัมย์ อาลีมิง (โค้ชยังไซเบอร์)**
+Software Engineer / AI Educator
+
+- Facebook: [facebook.com/youngcyber](https://facebook.com/youngcyber)
+
 ## License
 
 MIT
