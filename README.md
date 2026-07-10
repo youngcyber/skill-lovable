@@ -7,9 +7,24 @@
 > **แนะนำ: เรียกใช้ skill ในโหมด Plan เสมอ**
 
 1. เปิด Lovable แล้วสลับไปโหมด **Plan** (ไอคอนดินสอ มุมซ้ายบน)
-2. พิมพ์ idea แอปของคุณเป็นภาษาไทย เช่น `"อยากสร้างแอป task manager สำหรับทีม"`
-3. Lovable จะสร้าง chain prompt ครบทุก chain พร้อม checklist
-4. **ตรวจสอบทุก checkbox ใน Chain 1 ให้ผ่านก่อน** แล้วค่อย paste Chain 2
+2. เรียก skill ด้วย `/` ตามด้วยชื่อ skill เช่น `/lovable-vibe-coder`
+3. พิมพ์ idea แอปของคุณเป็นภาษาไทยต่อได้เลย เช่น `"อยากสร้างแอป task manager สำหรับทีม"`
+4. Lovable จะสร้าง chain prompt ครบทุก chain พร้อม checklist
+5. **ตรวจสอบทุก checkbox ใน Chain 1 ให้ผ่านก่อน** แล้วค่อย paste Chain 2
+
+**เลือก Skill ไหนดี?**
+
+| พิมพ์ | เมื่อต้องการ |
+|-------|-------------|
+| `/lovable-vibe-coder` | ไม่แน่ใจ — ให้ root skill เลือกให้อัตโนมัติ |
+| `/lovable-saas-planner` | แอปที่มี login + เก็บข้อมูล user |
+| `/lovable-landing-page-planner` | หน้าเว็บโปรโมท product |
+| `/lovable-dashboard-planner` | กราฟ, KPI cards, analytics |
+| `/lovable-ecommerce-planner` | ร้านค้า + ชำระเงิน |
+| `/lovable-forms-planner` | ฟอร์มสมัคร, ติดต่อ, multi-step |
+| `/lovable-data-management-planner` | ตาราง CRUD, kanban, import/export |
+| `/lovable-auth-planner` | เพิ่ม login ให้แอปที่มีอยู่แล้ว |
+| `/lovable-sub-chain-planner` | แอปซับซ้อน หรือเมื่อ Lovable regression บ่อย |
 
 **ทำไมต้องโหมด Plan?**
 - Lovable วางแผนก่อน ไม่ลงมือ code ทันที
