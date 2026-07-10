@@ -1,42 +1,67 @@
 # Contributing
 
-Contributions are welcome. This guide explains how to add new patterns, templates, or examples.
+ยินดีรับการมีส่วนร่วมครับ คู่มือนี้อธิบายวิธีเพิ่ม skill ใหม่หรือปรับปรุง skill ที่มีอยู่
 
-## What to Contribute
+## สิ่งที่ต้องการ
 
-- **Prompt patterns** — A repeatable prompt structure that produces reliable results for a specific use case
-- **Templates** — Scaffold prompts with clearly marked fill-in sections
-- **Examples** — Real prompts you used to build a real feature, with the outcome described
+- **Skill ใหม่** — chain prompt pattern สำหรับ use case ที่ยังไม่มีใน `skills/`
+- **ปรับปรุง Skill ที่มีอยู่** — เพิ่ม example, แก้ prompt template, หรืออัปเดต tech stack
+- **Bug fix** — แก้ prompt ที่ให้ผลลัพธ์ผิดใน Lovable
 
-## What Not to Contribute
+## สิ่งที่ไม่ต้องการ
 
-- Prompts that only work for one specific project
-- Screenshots of generated UIs without the prompts that produced them
-- Partial examples with TODO placeholders
+- Prompt ที่ใช้ได้เฉพาะ project ของตัวเองเท่านั้น
+- Skill ที่ไม่ได้ทดสอบกับ Lovable จริง
+- ไฟล์ที่มี TODO placeholder ค้างอยู่
 
-## How to Add a Pattern
+## วิธีเพิ่ม Skill ใหม่
 
-1. Fork this repository
-2. Add your file in the appropriate directory (`prompts/`, `templates/`, or `examples/`)
-3. Follow the format of an existing file in that directory
-4. Update the `README.md` index table if you add a new file
-5. Open a pull request with a title like: `Add: e-commerce checkout prompt pattern`
+1. Fork repository นี้
+2. สร้าง directory ใหม่ใน `skills/` เช่น `skills/blog/`
+3. สร้าง `skills/blog/SKILL.md` ตาม format ด้านล่าง
+4. อัปเดตตาราง Skills ใน `README.md`
+5. เปิด Pull Request ชื่อเช่น `Add: blog platform skill`
 
-## Format Requirements
+## Format ของ SKILL.md
 
-Every file must include:
+ทุก SKILL.md ต้องมี YAML frontmatter และ sections ต่อไปนี้:
 
-- A `## Overview` section explaining what the pattern is for
-- At least one complete, copy-pasteable prompt
-- A `## When to Use` section
-- A `## Example Output` description (not a screenshot — describe what gets built)
+```markdown
+---
+name: lovable-[domain]-planner
+description: "รับ idea [ประเภท] แล้วสร้าง prompt แบบ chain pattern 4 ชั้นสำหรับ Lovable: โครงสร้าง → ฟีเจอร์หลัก → จัดการข้อมูล → เก็บรายละเอียด รองรับภาษาไทย"
+---
+
+## When to Use
+## Input Schema
+## Workflow
+## Output Schema
+## Output Format
+## Error Handling
+## Examples
+```
+
+**กฎที่ต้องทำตาม:**
+- `description` ต้องเป็น single-line string ใน `" "`
+- prompt template ในส่วน Workflow ต้องเป็นภาษาไทย
+- ทุก chain ต้องมี checklist "เสร็จเมื่อ" ที่ตรวจสอบได้จริง
+- ต้องมีอย่างน้อย 1 ตัวอย่างใน Examples section
+
+## Chain Pattern ที่ใช้
+
+skill ทุกตัวต้องเรียงตาม 4 chain นี้:
+
+| Chain | ชื่อ | สิ่งที่ห้ามทำ |
+|-------|------|--------------|
+| Chain 1 | โครงสร้าง | ห้าม connect database หรือ add logic |
+| Chain 2 | ฟีเจอร์หลัก | ห้าม call Supabase — ใช้ mock data เท่านั้น |
+| Chain 3 | จัดการข้อมูล | ทำทีละ feature ห้าม connect ทุกอย่างพร้อมกัน |
+| Chain 4 | เก็บรายละเอียด | ต้องทำหลัง chain 3 เสร็จเท่านั้น |
 
 ## Commit Style
 
-Use clear, imperative commit messages:
-
 ```
-Add landing page prompt for SaaS hero sections
-Fix typo in CRM dashboard example
-Update component-prompt template with validation criteria
+Add: blog platform skill
+Update: saas-apps chain 3 Supabase schema
+Fix: auth skill redirect logic after login
 ```
