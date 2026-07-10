@@ -14,17 +14,7 @@
 
 **เลือก Skill ไหนดี?**
 
-| พิมพ์ | เมื่อต้องการ |
-|-------|-------------|
-| `/lovable-vibe-coder` | ไม่แน่ใจ — ให้ root skill เลือกให้อัตโนมัติ |
-| `/lovable-saas-planner` | แอปที่มี login + เก็บข้อมูล user |
-| `/lovable-landing-page-planner` | หน้าเว็บโปรโมท product |
-| `/lovable-dashboard-planner` | กราฟ, KPI cards, analytics |
-| `/lovable-ecommerce-planner` | ร้านค้า + ชำระเงิน |
-| `/lovable-forms-planner` | ฟอร์มสมัคร, ติดต่อ, multi-step |
-| `/lovable-data-management-planner` | ตาราง CRUD, kanban, import/export |
-| `/lovable-auth-planner` | เพิ่ม login ให้แอปที่มีอยู่แล้ว |
-| `/lovable-sub-chain-planner` | แอปซับซ้อน หรือเมื่อ Lovable regression บ่อย |
+ติดตั้งแค่ `/lovable-vibe-coder` ตัวเดียวพอ — skill จะเลือก sub-skill ที่เหมาะสมให้อัตโนมัติตามประเภทแอปที่บอก
 
 **ทำไมต้องโหมด Plan?**
 - Lovable วางแผนก่อน ไม่ลงมือ code ทันที
