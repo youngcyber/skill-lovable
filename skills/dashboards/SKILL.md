@@ -5,7 +5,7 @@ description: "รับ idea dashboard แล้วสร้าง prompt แบ
 
 # Lovable Dashboard Planner
 
-สร้าง chain prompt สำหรับ analytics dashboard บน Lovable ใน 4 ชั้น สร้าง layout + widget shell ก่อน แล้วค่อย connect data จริง
+รับ idea dashboard จาก user แล้วสร้าง chain prompt พร้อม paste เข้า Lovable ทีละ chain ตอบกลับทุกอย่างเป็นภาษาไทย รวมถึง prompt ที่สร้างสำหรับ Lovable
 
 ## When to Use
 

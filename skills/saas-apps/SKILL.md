@@ -5,7 +5,7 @@ description: "รับ idea SaaS แล้วสร้าง prompt แบบ c
 
 # Lovable SaaS Planner
 
-สร้าง chain prompt สำหรับ SaaS app ด้วย Lovable ใน 4 ชั้น เริ่มจาก UI ก่อนเสมอ แล้วค่อย wire database — ตามแนวทาง "Front design first, then backend" ของ Lovable
+รับ idea SaaS จาก user แล้วสร้าง chain prompt พร้อม paste เข้า Lovable ทีละ chain ตอบกลับทุกอย่างเป็นภาษาไทย รวมถึง prompt ที่สร้างสำหรับ Lovable
 
 ## When to Use
 

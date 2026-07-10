@@ -5,7 +5,7 @@ description: "รับความต้องการ auth แล้วสร
 
 # Lovable Auth Planner
 
-สร้าง chain prompt สำหรับระบบ authentication ด้วย Supabase Auth ใน 4 ชั้น สร้าง UI ก่อน แล้วค่อย connect Supabase Auth จริง
+รับความต้องการ auth จาก user แล้วสร้าง chain prompt พร้อม paste เข้า Lovable ทีละ chain ตอบกลับทุกอย่างเป็นภาษาไทย รวมถึง prompt ที่สร้างสำหรับ Lovable
 
 ## When to Use
 

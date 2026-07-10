@@ -5,7 +5,7 @@ description: "รับ idea form แล้วสร้าง prompt แบบ c
 
 # Lovable Forms Planner
 
-สร้าง chain prompt สำหรับ form ทุกประเภทบน Lovable ใน 4 ชั้น สร้าง UI ก่อน ใส่ validation ถัดไป แล้วค่อย connect database — ไม่ผสมกัน
+รับ idea form จาก user แล้วสร้าง chain prompt พร้อม paste เข้า Lovable ทีละ chain ตอบกลับทุกอย่างเป็นภาษาไทย รวมถึง prompt ที่สร้างสำหรับ Lovable
 
 ## When to Use
 
