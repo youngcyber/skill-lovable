@@ -1,6 +1,20 @@
 # Lovable Vibe Coder Skills
 
-คอลเลกชัน Manus Skills สำหรับสร้าง prompt แบบ chain pattern เพื่อ build แอปด้วย [Lovable](https://lovable.dev) — รับ idea เป็นภาษาไทย ออก prompt พร้อม paste ทีละ chain
+คอลเลกชัน Lovable Skills สำหรับสร้าง prompt แบบ chain pattern เพื่อ build แอปด้วย [Lovable](https://lovable.dev) — รับ idea เป็นภาษาไทย ออก prompt พร้อม paste ทีละ chain
+
+## วิธีใช้งาน
+
+> **แนะนำ: เรียกใช้ skill ในโหมด Plan เสมอ**
+
+1. เปิด Lovable แล้วสลับไปโหมด **Plan** (ไอคอนดินสอ มุมซ้ายบน)
+2. พิมพ์ idea แอปของคุณเป็นภาษาไทย เช่น `"อยากสร้างแอป task manager สำหรับทีม"`
+3. Lovable จะสร้าง chain prompt ครบทุก chain พร้อม checklist
+4. **ตรวจสอบทุก checkbox ใน Chain 1 ให้ผ่านก่อน** แล้วค่อย paste Chain 2
+
+**ทำไมต้องโหมด Plan?**
+- Lovable วางแผนก่อน ไม่ลงมือ code ทันที
+- ลด hallucination และ regression
+- แก้ไข plan ได้ก่อนที่ Lovable จะเริ่ม build จริง
 
 ## โครงสร้าง
 
